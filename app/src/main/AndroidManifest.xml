@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      The only permission DevHatch declares. Signature-level, so no runtime
+      prompt; granted once over adb:
+        adb shell pm grant com.mahesh.devhatch android.permission.WRITE_SECURE_SETTINGS
+      Deliberately NO android.permission.INTERNET: the app physically cannot
+      phone home.
+    -->
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.DevHatch">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Home-screen widget provider. Exported so the system can deliver
+             the APPWIDGET_UPDATE broadcast. -->
+        <receiver
+            android:name=".DevHatchWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/devhatch_widget_info" />
+        </receiver>
+
+        <!-- Handles widget-button taps. Reached only by this app's explicit
+             intents, so it stays unexported. -->
+        <receiver
+            android:name=".ToggleReceiver"
+            android:exported="false" />
+
+    </application>
+
+</manifest>

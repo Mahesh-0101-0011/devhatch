@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Plain system Material theme; no AppCompat/Compose dependency needed. -->
+    <style name="Theme.DevHatch" parent="@android:style/Theme.Material.Light.DarkActionBar" />
+</resources>
