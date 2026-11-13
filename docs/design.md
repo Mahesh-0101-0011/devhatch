@@ -275,26 +275,41 @@ adb shell pm grant <package> android.permission.WRITE_SECURE_SETTINGS
 
 ## 10. Open decisions (need Mahesh's input or on-device checks)
 
-- **Package name** (affects the `adb grant` string). e.g.
-  `com.mahesh.devhatch` or `dev.mahesh.devhatch`.
-- **`minSdk` / `targetSdk`** — `targetSdk 35`; `minSdk` 24 vs higher.
-- **Exact deep-link target for the pairing screen on Moto G05.** Needs
-  on-device discovery — open Developer options → Wireless debugging and
-  read the component via
-  `adb shell dumpsys activity activities | grep -i wireless`
-  (or watch `adb logcat` for the resumed activity), then launch it with
-  an explicit `ComponentName`/`am start`. The AOSP action
-  `android.settings.APPLICATION_DEVELOPMENT_SETTINGS` reliably opens
-  Developer options as a fallback if a direct wireless-debugging link
-  isn't exposed.
+- **Package name** (affects the `adb grant` string). **RESOLVED:**
+  `com.mahesh.devhatch`.
+- **`minSdk` / `targetSdk`** — **RESOLVED:** `targetSdk 35`, `minSdk 26`
+  (adaptive icons are API 26+, so this avoids legacy icon bitmaps; tiles
+  are deferred anyway).
+- **Exact deep-link target for the pairing screen on Moto G05.**
+  **RESOLVED (2026-11-13, on-device).** No third-party app can open the
+  dedicated Wireless Debugging screen on My UX. That screen is
+  `WirelessDebuggingFragment`, hosted only by
+  `com.android.settings.SubSettings`, which is **not exported** — even an
+  adb-shell `am start` is denied (`Permission Denial … not exported from
+  uid 1000`), and MtkSettings ships **no** `Settings$WirelessDebuggingActivity`
+  alias (only the QS *tile* `DevelopmentTiles$WirelessDebugging`). Launching
+  the exported base `.Settings` with `:settings:show_fragment` is ignored for
+  an outside caller and lands on the Settings homepage.
+  Best reachable target, implemented: open Developer options
+  (`android.settings.APPLICATION_DEVELOPMENT_SETTINGS`) with the highlight
+  extra `:settings:fragment_args_key = toggle_adb_wireless`, which scrolls to
+  and flashes the "Wireless debugging" row — one tap from the sub-screen. The
+  "Pair" tap routes through an invisible trampoline `PairingActivity` (an
+  Activity, not the receiver) so the `startActivity` isn't blocked by
+  background-activity-launch limits.
 - **Does writing `adb_wifi_enabled=1` actually start the service on My
   UX** (advertise over mDNS), or does it only flip the flag and still
   need the UI to kick it? Verify on-device; if the latter, keep the deep
   link as the practical path for wireless ADB and treat the toggle as
   best-effort.
-- **Include QS tiles in v1 or defer?** (Currently §9 deferred.)
-- **Status screen in Compose or plain Views?** For a widget-first app,
-  plain Views keep it lighter on a 4 GB device.
+- **Include QS tiles in v1 or defer?** **RESOLVED:** deferred (§9).
+- **Status screen in Compose or plain Views?** **RESOLVED:** plain Views,
+  to stay light on a 4 GB device.
+- **Does writing `adb_wifi_enabled=1` start the mDNS service on My UX?**
+  Still unverified in isolation; the on-device check was complicated by the
+  fact that the test connection runs *over* wireless adb, so toggling the
+  flag drops the session. The "Pair" deep link remains the practical path
+  regardless, so this is treated as best-effort per the original plan.
 
 ---
 

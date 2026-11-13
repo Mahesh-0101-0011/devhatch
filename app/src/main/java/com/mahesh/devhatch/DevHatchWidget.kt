@@ -62,9 +62,10 @@ class DevHatchWidget : AppWidgetProvider() {
             views.setOnClickPendingIntent(
                 R.id.cell_banking, broadcast(context, ToggleReceiver.ACTION_BANKING_OFF, 3)
             )
-            views.setOnClickPendingIntent(
-                R.id.cell_pairing, broadcast(context, ToggleReceiver.ACTION_OPEN_PAIRING, 4)
-            )
+            // "Pair" opens a Settings screen, so it launches an Activity
+            // directly (via the invisible PairingActivity trampoline) rather
+            // than a broadcast, avoiding background-activity-launch limits.
+            views.setOnClickPendingIntent(R.id.cell_pairing, pairingActivity(context))
 
             manager.updateAppWidget(widgetId, views)
         }
@@ -77,6 +78,17 @@ class DevHatchWidget : AppWidgetProvider() {
             return PendingIntent.getBroadcast(
                 context,
                 requestCode,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        }
+
+        private fun pairingActivity(context: Context): PendingIntent {
+            val intent = Intent(context, PairingActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            return PendingIntent.getActivity(
+                context,
+                4,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )

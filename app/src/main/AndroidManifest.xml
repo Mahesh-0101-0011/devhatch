@@ -40,11 +40,20 @@
                 android:resource="@xml/devhatch_widget_info" />
         </receiver>
 
-        <!-- Handles widget-button taps. Reached only by this app's explicit
-             intents, so it stays unexported. -->
+        <!-- Handles widget-button toggle taps. Reached only by this app's
+             explicit intents, so it stays unexported. -->
         <receiver
             android:name=".ToggleReceiver"
             android:exported="false" />
+
+        <!-- Invisible trampoline for the "Pair" tap: launches the Settings
+             screen from an Activity context (no background-launch limits). -->
+        <activity
+            android:name=".PairingActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
     </application>
 
