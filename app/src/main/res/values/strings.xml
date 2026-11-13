@@ -16,8 +16,6 @@
     <string name="permission_missing">Permission NOT granted \u2014 run the command below</string>
     <string name="row_dev_options">Developer options: %1$s</string>
     <string name="row_adb_wifi">Wireless debugging: %1$s</string>
-    <string name="grant_hint">One\u2011time setup (run from a computer with the device on USB debugging). Survives reboots and app updates; lost only on uninstall.</string>
-    <string name="btn_copy_command">Copy command</string>
     <string name="btn_toggle_dev">Toggle developer options</string>
     <string name="btn_toggle_adb">Toggle wireless debugging</string>
     <string name="btn_banking_off">Bank\u2011safe off (both off)</string>
@@ -26,5 +24,4 @@
     <!-- Toasts -->
     <string name="toast_no_permission">WRITE_SECURE_SETTINGS not granted yet. Run the adb command on the status screen.</string>
     <string name="toast_no_pairing_screen">Could not open the wireless debugging screen on this device.</string>
-    <string name="toast_copied">Command copied to clipboard</string>
 </resources>

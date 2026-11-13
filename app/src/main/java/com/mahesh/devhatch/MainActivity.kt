@@ -1,19 +1,16 @@
 package com.mahesh.devhatch
 
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 
 /**
- * Status screen and manual fallback for the widget. Shows whether the
- * one-time grant is in place, the live state of both flags, buttons that do
- * the same work as the widget, and the exact adb command to (re)grant the
- * permission after a fresh install.
+ * Status screen and manual fallback for the widget. Shows whether the grant is
+ * in place and the live state of both flags, plus buttons that do the same
+ * work as the widget. The one-time `adb pm grant` command lives in the README,
+ * since it is run from a computer, not here.
  *
  * Plain Views on purpose: a widget-first utility has no need for Compose on a
  * budget device.
@@ -32,13 +29,6 @@ class MainActivity : Activity() {
         devState = findViewById(R.id.dev_state)
         adbState = findViewById(R.id.adb_state)
 
-        val grantCommand =
-            "adb shell pm grant $packageName android.permission.WRITE_SECURE_SETTINGS"
-        findViewById<TextView>(R.id.grant_command).text = grantCommand
-
-        findViewById<Button>(R.id.btn_copy_command).setOnClickListener {
-            copyToClipboard(grantCommand)
-        }
         findViewById<Button>(R.id.btn_toggle_dev).setOnClickListener {
             ifGranted { SettingsWriter.setDevOptions(this, !SettingsWriter.isDevOptionsEnabled(this)) }
         }
@@ -85,10 +75,4 @@ class MainActivity : Activity() {
 
     private fun label(on: Boolean): String =
         getString(if (on) R.string.state_on else R.string.state_off)
-
-    private fun copyToClipboard(text: String) {
-        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("DevHatch grant command", text))
-        Toast.makeText(this, R.string.toast_copied, Toast.LENGTH_SHORT).show()
-    }
 }
